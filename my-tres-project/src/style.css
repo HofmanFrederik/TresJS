@@ -1,0 +1,13 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+#app {
+  height: 100%;
+  width: 100%;
+  /* --lucht-boven / --lucht-onder worden door de simulatie bijgewerkt (zonnestand en bewolking) */
+  background: linear-gradient(to bottom, var(--lucht-boven, #6cc3ec) 0%, var(--lucht-onder, #e6f6fd) 100%);
+}
