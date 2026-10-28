@@ -124,6 +124,30 @@ P = aantal · 1,76 m² · 0,20 · 0,90 · G · f_temp
 - Open-Meteo geeft uurgemiddelden. Bij gebroken bewolking kan de directe straling daardoor hoog lijken terwijl de bewolking ook hoog is.
 - De Beatles blijven 's nachts oversteken, los van de simulatietijd.
 
+## AI-verantwoording
+
+**Tool:** Claude Code (Claude Sonnet 5.5) in de Claude desktop-app.
+
+**Fase 1 (zelf, zonder AI):** de setup van het project, de tutorial op de TresJS-site gevolgd en zelf een huis gebouwd. Daarbij heb ik geëxperimenteerd met de camera, de verlichting en eigen componenten.
+
+**Fase 2 en 3 (met AI):** ik gaf opdrachten in gewone taal en Claude schreef en testte de code. Mijn prompts, in volgorde:
+
+1. Mijn huisje verder afwerken.
+2. Het huisje laten lijken op een referentiefoto, en kleiner maken.
+3. Een mooiere achtergrond dan enkel wit.
+4. De opdracht Energy Twin uitwerken (echte data, spraakcommando's, simulatie met grafiek en parameters).
+5. Mensen toevoegen, en ze The Beatles maken (Abbey Road).
+6. Controleren of de spraakcommando's werken, en uitleg over hoe de spraak werkt.
+7. Meer weer toevoegen: wind, regen, sneeuw, enzovoort.
+8. Een party mode die start als ik "party" zeg.
+9. Deze README, de deploy naar GitHub Pages en de AI-verantwoording.
+
+**Wat Claude deed:** het huis herwerken naar de referentie, het energiemodel met Open-Meteo en SunCalc, het dashboard met grafiek, de spraakcommando's (Web Speech API), het weer, de Beatles, de party mode met zelfgemaakte muziek, en de README en de deploy-workflow. Claude testte dit in de browser en loste fouten op die daarbij opdoken.
+
+**Wat ik zelf deed:** de opdrachten bepalen, de resultaten bekijken en bijsturen, en de commits en de publicatie op GitHub Pages laten uitvoeren.
+
+**Let op:** een groot deel van de code in fase 2 en 3 is door Claude geschreven. Het eerste huis dat ik zelf maakte is daarbij herwerkt en niet apart bewaard.
+
 ## Reflectie: met en zonder AI
 
 Zonder AI was dit project een traag maar wel leerzaam, bij het starten krijg je verschillende errors waardoor je diep moet zoeken in je code wat er fout is waardoor je wel goed leert welke delen wat doen en wat er mis kan gaan, werken met 3d om bv een huis te maken kan heel lang duren en op het einde heb je een heel simpel huisje maar verder nog niks. Eens je AI gebruikt is het maken van een huis of een gebouw veel sneller en gedetailleerder, changes zijn snel gemaakt en je kan leuke dingen toevoegen die zonder AI te veel werk zouden zijn voor zo iets kleins. Ai is natuurlijk een heel handige tool, maar eens je begint met het prompten van changes dan ben je al snel kwijt wat je effectief maakt en moet je achteraf leren wat je gemaakt hebt. Met nieuwe dingen zoals Tres.js vind ik het dan wel leuk en handig om eens van scratch te beginnen zonder een tool die het voor jou doet. Maar als je snel resultaten wilt en wil zien wat er mogelijk is dan is AI heel handig om te gebruiken en mee te testen waar de limieten liggen van een tool zoals TresJS.
