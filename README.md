@@ -124,6 +124,10 @@ P = aantal · 1,76 m² · 0,20 · 0,90 · G · f_temp
 - Open-Meteo geeft uurgemiddelden. Bij gebroken bewolking kan de directe straling daardoor hoog lijken terwijl de bewolking ook hoog is.
 - De Beatles blijven 's nachts oversteken, los van de simulatietijd.
 
+## Reflectie: met en zonder AI
+
+Zonder AI was dit project een traag maar wel leerzaam, bij het starten krijg je verschillende errors waardoor je diep moet zoeken in je code wat er fout is waardoor je wel goed leert welke delen wat doen en wat er mis kan gaan, werken met 3d om bv een huis te maken kan heel lang duren en op het einde heb je een heel simpel huisje maar verder nog niks. Eens je AI gebruikt is het maken van een huis of een gebouw veel sneller en gedetailleerder, changes zijn snel gemaakt en je kan leuke dingen toevoegen die zonder AI te veel werk zouden zijn voor zo iets kleins. Ai is natuurlijk een heel handige tool, maar eens je begint met het prompten van changes dan ben je al snel kwijt wat je effectief maakt en moet je achteraf leren wat je gemaakt hebt. Met nieuwe dingen zoals Tres.js vind ik het dan wel leuk en handig om eens van scratch te beginnen zonder een tool die het voor jou doet. Maar als je snel resultaten wilt en wil zien wat er mogelijk is dan is AI heel handig om te gebruiken en mee te testen waar de limieten liggen van een tool zoals TresJS.
+
 ## Structuur
 
 ```
