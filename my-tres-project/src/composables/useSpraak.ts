@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { feest, startFeest, stopFeest } from './useFeest'
 import {
   MAX_PANELEN,
   type Weerbron,
@@ -15,7 +16,8 @@ import {
 } from './useEnergie'
 
 // Web Speech API: werkt in Chrome en Edge, niet in Firefox. Daarom hebben alle commando's ook een knop.
-const Herkenner = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+const Herkenner =
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
 
 export const spraak = reactive({
   ondersteund: Boolean(Herkenner),
@@ -27,6 +29,7 @@ export const spraak = reactive({
 })
 
 export const commandoKnoppen = [
+  { label: '🎉 Party', zin: 'party' },
   { label: 'Zon op 15 uur', zin: 'zet de zon op 15 uur' },
   { label: 'Hoeveel energie?', zin: 'hoeveel energie produceren we' },
   { label: 'Meer panelen', zin: 'meer panelen' },
@@ -76,15 +79,18 @@ function normaliseer(zin: string) {
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[,!?]/g, ' ')
-  for (const [woord, getal] of getalWoorden) t = t.replace(new RegExp(`\\b${woord}\\b`, 'g'), String(getal))
+  for (const [woord, getal] of getalWoorden)
+    t = t.replace(new RegExp(`\\b${woord}\\b`, 'g'), String(getal))
   return t.replace(/\s+/g, ' ').trim()
 }
 
 const afronden = (n: number, d = 1) => n.toFixed(d).replace('.', ',')
-const kw = (w: number) => (w >= 1000 ? `${afronden(w / 1000)} kilowatt` : `${Math.round(w)} watt`)
+const kw = (w: number) =>
+  w >= 1000 ? `${afronden(w / 1000)} kilowatt` : `${Math.round(w)} watt`
 
 function productieAntwoord() {
-  if (staat.panelen === 0) return 'Er zijn geen panelen ingeschakeld, dus er wordt niets geproduceerd.'
+  if (staat.panelen === 0)
+    return 'Er zijn geen panelen ingeschakeld, dus er wordt niets geproduceerd.'
   return `Om ${formatUur(staat.uur)} produceren we ${kw(nu.value.vermogen)}. Tot nu toe ${afronden(totNu.value)} kilowattuur, en vandaag in totaal ${afronden(dagTotaal.value)} kilowattuur.`
 }
 
@@ -98,26 +104,44 @@ function interpreteer(invoer: string): Resultaat | null {
   const t = normaliseer(invoer)
   const getal = t.match(/\d+/)
 
+  // 0. Feest: moet vóór de rest komen, want "stop het feest" bevat ook "stop"
+  if (/\b(stop|einde|geen|uit|genoeg)\b.*\b(party|partij|feest|feestje|disco|muziek)\b/.test(t)) {
+    stopFeest()
+    return { tekst: 'Het feest is voorbij. Tijd en weer staan weer zoals ervoor.' }
+  }
+  if (/\b(party|partie|partij|parti|feest|feestje|disco)\b/.test(t)) {
+    if (feest.aan) return { tekst: 'Het feest is al bezig!' }
+    startFeest()
+    return { tekst: 'Party! Het is 22:00, de discolichten draaien en de Beatles dansen. Zeg "stop het feest" om te stoppen.' }
+  }
+
   // 1. Panelen: "meer panelen", "zet 8 panelen aan", "alle panelen uit"
   if (/paneel|panelen/.test(t)) {
     if (/\b(alle|maximum|max|vol)\b/.test(t)) staat.panelen = MAX_PANELEN
     else if (/\b(geen|nul|uit)\b/.test(t)) staat.panelen = 0
     else if (getal) staat.panelen = Math.min(MAX_PANELEN, Number(getal[0]))
-    else if (/\b(meer|extra|erbij|bij)\b/.test(t)) staat.panelen = Math.min(MAX_PANELEN, staat.panelen + 2)
-    else if (/\b(minder|weg|eraf)\b/.test(t)) staat.panelen = Math.max(0, staat.panelen - 2)
+    else if (/\b(meer|extra|erbij|bij)\b/.test(t))
+      staat.panelen = Math.min(MAX_PANELEN, staat.panelen + 2)
+    else if (/\b(minder|weg|eraf)\b/.test(t))
+      staat.panelen = Math.max(0, staat.panelen - 2)
     else return null
     return { tekst: `Aantal panelen: ${staat.panelen} van ${MAX_PANELEN}.` }
   }
 
   // 2. Vraag naar de productie
-  if (/hoeveel|productie|produceren|opbrengst|opgewekt|kwh|vermogen|energie/.test(t)) {
+  if (
+    /hoeveel|productie|produceren|opbrengst|opgewekt|kwh|vermogen|energie/.test(
+      t,
+    )
+  ) {
     return { tekst: productieAntwoord(), antwoord: true }
   }
 
   // 3. Seizoen
   const seizoen = t.match(/\b(winter|lente|voorjaar|zomer|herfst|najaar)\b/)
   if (seizoen) {
-    const naam = { voorjaar: 'lente', najaar: 'herfst' }[seizoen[1]] ?? seizoen[1]
+    const naam =
+      { voorjaar: 'lente', najaar: 'herfst' }[seizoen[1]] ?? seizoen[1]
     zetSeizoen(naam as 'winter' | 'lente' | 'zomer' | 'herfst')
     return { tekst: `Datum gezet op ${staat.datum} (${naam}).` }
   }
@@ -136,11 +160,15 @@ function interpreteer(invoer: string): Resultaat | null {
   }
   if (/\bwind\b/.test(t) && /\b(meer|harder|sterker|extra)\b/.test(t)) {
     staat.windExtra = Math.min(12, staat.windExtra + 3)
-    return { tekst: `Extra wind: ${afronden(staat.windExtra)} meter per seconde (nu ${afronden(nu.value.weer.wind)}).` }
+    return {
+      tekst: `Extra wind: ${afronden(staat.windExtra)} meter per seconde (nu ${afronden(nu.value.weer.wind)}).`,
+    }
   }
   if (/\bwind\b/.test(t) && /\b(minder|zachter|rustiger|zwakker)\b/.test(t)) {
     staat.windExtra = Math.max(-6, staat.windExtra - 3)
-    return { tekst: `Extra wind: ${afronden(staat.windExtra)} meter per seconde (nu ${afronden(nu.value.weer.wind)}).` }
+    return {
+      tekst: `Extra wind: ${afronden(staat.windExtra)} meter per seconde (nu ${afronden(nu.value.weer.wind)}).`,
+    }
   }
   const weertypes: [RegExp, Weerbron, string][] = [
     [/onweer|storm|bliksem|donder/, 'storm', 'onweer met bliksem'],
@@ -180,24 +208,37 @@ function interpreteer(invoer: string): Resultaat | null {
   // 6. Tijdstip: "zet de zon op 15 uur", "om 9:30", "zonsopgang", "middag"
   const tijden = zonnetijden(staat.datum)
   const benoemd = [
-    { woord: /zonsopgang|zonsopkomst/, uur: tijden.opkomst, naam: 'zonsopgang' },
+    {
+      woord: /zonsopgang|zonsopkomst/,
+      uur: tijden.opkomst,
+      naam: 'zonsopgang',
+    },
     { woord: /zonsondergang/, uur: tijden.ondergang, naam: 'zonsondergang' },
-    { woord: /middag|zenit/, uur: tijden.middag, naam: 'de middag (hoogste zonnestand)' },
+    {
+      woord: /middag|zenit/,
+      uur: tijden.middag,
+      naam: 'de middag (hoogste zonnestand)',
+    },
     { woord: /middernacht/, uur: 0, naam: 'middernacht' },
   ].find((b) => b.woord.test(t))
   if (benoemd && benoemd.uur !== null) {
     staat.uur = benoemd.uur
     staat.speelt = false
-    return { tekst: `Tijd gezet op ${formatUur(staat.uur)}, ${benoemd.naam}. Afspelen gepauzeerd.` }
+    return {
+      tekst: `Tijd gezet op ${formatUur(staat.uur)}, ${benoemd.naam}. Afspelen gepauzeerd.`,
+    }
   }
   const tijd = t.match(/(\d{1,2})\s*(?:uur|u|h|:|\.)?\s*(\d{2})?/)
   if (tijd && /\b(zon|tijd|klok|uur|u|om|zet|stel)\b/.test(t)) {
     const uren = Number(tijd[1])
     const minuten = tijd[2] ? Number(tijd[2]) : 0
-    if (uren > 24 || minuten > 59) return { tekst: `${tijd[0]} is geen geldig uur.` }
+    if (uren > 24 || minuten > 59)
+      return { tekst: `${tijd[0]} is geen geldig uur.` }
     staat.uur = uren === 24 ? 0 : uren + minuten / 60
     staat.speelt = false
-    return { tekst: `Tijd gezet op ${formatUur(staat.uur)}. Afspelen gepauzeerd.` }
+    return {
+      tekst: `Tijd gezet op ${formatUur(staat.uur)}. Afspelen gepauzeerd.`,
+    }
   }
 
   return null
@@ -225,13 +266,15 @@ export function voerUit(zin: string, gesproken = false) {
     spraak.gevolg = resultaat.tekst
     if (gesproken && resultaat.antwoord) spreekUit(resultaat.tekst)
   } else {
-    spraak.gevolg = 'Dat commando ken ik niet. Probeer bijvoorbeeld: "zet de zon op 15 uur" of "meer panelen".'
+    spraak.gevolg =
+      'Dat commando ken ik niet. Probeer bijvoorbeeld: "zet de zon op 15 uur" of "meer panelen".'
   }
 }
 
 const foutTeksten: Record<string, string> = {
   'not-allowed': 'Microfoon geweigerd. Gebruik de knoppen hieronder.',
-  'service-not-allowed': 'Spraakherkenning is geblokkeerd. Gebruik de knoppen hieronder.',
+  'service-not-allowed':
+    'Spraakherkenning is geblokkeerd. Gebruik de knoppen hieronder.',
   'no-speech': 'Ik heb niets gehoord, probeer opnieuw.',
   'audio-capture': 'Geen microfoon gevonden. Gebruik de knoppen hieronder.',
   network: 'Spraakherkenning heeft internet nodig.',

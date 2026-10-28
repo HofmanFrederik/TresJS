@@ -20,6 +20,7 @@ import Neerslag from './Neerslag.vue'
 import Vlag from './Vlag.vue'
 import Sneeuwdak from './Sneeuwdak.vue'
 import Mist from './Mist.vue'
+import Party from './Party.vue'
 import Wolken from './Wolken.vue'
 import Zon from './Zon.vue'
 import Zonnepanelen from './Zonnepanelen.vue'
@@ -71,6 +72,7 @@ const atticY = wallTop + 1 + 0.6
   <Zon />
   <Mist />
   <Neerslag />
+  <Party />
 
   <!-- <TheDonut /> -->
 

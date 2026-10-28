@@ -5,6 +5,7 @@ import { templateCompilerOptions } from "@tresjs/core";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "./",
   plugins: [
     vue({
       ...templateCompilerOptions,
@@ -14,8 +15,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          three: ["three"],
+        manualChunks(id: string) {
+          if (id.includes("node_modules/three/")) return "three";
         },
       },
     },

@@ -20,6 +20,7 @@ import {
   zetSeizoen,
   zetVandaag,
 } from '../composables/useEnergie'
+import { feest, wisselFeest } from '../composables/useFeest'
 import { commandoKnoppen, spraak, startLuisteren, stopLuisteren, voerUit } from '../composables/useSpraak'
 
 onMounted(startTikken)
@@ -100,6 +101,11 @@ const luisterTekst = computed(() => (spraak.luistert ? 'Ik luister…' : 'Praat 
       <p class="bron" :data-status="bronStatus">
         <span class="punt" />{{ bronTekst }}
       </p>
+
+      <button class="party" :class="{ aan: feest.aan }" :aria-pressed="feest.aan" @click="wisselFeest">
+        {{ feest.aan ? '🛑 Stop het feest' : '🎉 Party!' }}
+      </button>
+      <p v-if="feest.aan && feest.stil" class="stil">Klik ergens op de pagina om de muziek te starten.</p>
 
       <!-- Live waarden -->
       <section class="kpis" aria-label="Live waarden">
@@ -375,6 +381,25 @@ h1 {
 .klein-tekst {
   font-size: 13px;
   font-weight: 600;
+}
+.party {
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #ff3d81, #ff8a3d 50%, #ffd23f);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.party.aan {
+  background: var(--tekst);
+}
+.stil {
+  margin: 0;
+  color: #b02a2a;
+  font-size: 12px;
 }
 .onder {
   display: block;

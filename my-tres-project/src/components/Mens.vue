@@ -18,6 +18,7 @@ const props = withDefaults(
     bril?: boolean
     loopt?: boolean // armen en benen zwaaien mee
     zwaait?: boolean // één arm omhoog
+    danst?: boolean // beide armen in de lucht, benen op de maat
   }>(),
   {
     position: () => [0, 0, 0],
@@ -33,6 +34,7 @@ const props = withDefaults(
     bril: false,
     loopt: false,
     zwaait: false,
+    danst: false,
   },
 )
 
@@ -46,10 +48,22 @@ onBeforeRender(({ elapsed }) => {
   const stap = props.loopt ? Math.sin(elapsed * 7) * 0.7 : 0
   if (beenA.value) beenA.value.rotation.x = stap
   if (beenB.value) beenB.value.rotation.x = -stap
-  if (armA.value) armA.value.rotation.x = -stap * 0.8
+  if (armA.value) {
+    armA.value.rotation.x = -stap * 0.8
+    armA.value.rotation.z = props.danst ? -(2.3 + Math.sin(elapsed * 13) * 0.5) : -0.05
+  }
   if (armB.value) {
     armB.value.rotation.x = stap * 0.8
-    armB.value.rotation.z = props.zwaait ? 2.6 + Math.sin(elapsed * 6) * 0.3 : 0.05
+    armB.value.rotation.z = props.danst
+      ? 2.3 + Math.sin(elapsed * 13 + Math.PI) * 0.5
+      : props.zwaait
+        ? 2.6 + Math.sin(elapsed * 6) * 0.3
+        : 0.05
+  }
+  // dansen: de benen wippen op de maat
+  if (props.danst) {
+    if (beenA.value) beenA.value.rotation.x = Math.sin(elapsed * 13) * 0.35
+    if (beenB.value) beenB.value.rotation.x = -Math.sin(elapsed * 13) * 0.35
   }
 })
 </script>

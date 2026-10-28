@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { feest } from '../composables/useFeest'
+
 // Lange zijde = lokale z-as, zelfde oriëntatie als Muur
 withDefaults(
   defineProps<{
@@ -28,7 +30,14 @@ const depth = 0.2
     <!-- Glas -->
     <TresMesh>
       <TresBoxGeometry :args="[0.04, height, width]" />
-      <TresMeshStandardMaterial color="#9FC4E0" transparent :opacity="0.55" :roughness="0.1" />
+      <TresMeshStandardMaterial
+        :color="feest.aan ? '#FFD98A' : '#9FC4E0'"
+        transparent
+        :opacity="feest.aan ? 0.9 : 0.55"
+        :roughness="0.1"
+        emissive="#FFB347"
+        :emissive-intensity="feest.aan ? 0.9 : 0"
+      />
     </TresMesh>
 
     <!-- Kader -->
